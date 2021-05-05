@@ -2,7 +2,7 @@
 
 ## Usage
 
-Run with `factom-vanity [-threads 2] [-sleep 50] -file <input file>`.
+Run with `vanity [-threads 2] [-sleep 50] -file <input file>`.
 
 * threads: The number of goroutines to start. More goroutines means more threads will be started and more cpu will be used.
 * sleep: The amount of time in microseconds that each thread sleeps between generating the next address pair. The default value is suitable to run in the background for longer periods of time without tying up a significant amount of cpu resources. Lower it to calculate more hashes per second.
