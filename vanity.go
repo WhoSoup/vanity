@@ -1,9 +1,15 @@
 package main
 
 import (
+	"crypto/ed25519"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
+	"sync/atomic"
 	"time"
+
+	"github.com/btcsuite/btcutil/base58"
 )
 
 // comp compares the input against two separate bytes
@@ -25,22 +31,28 @@ func toUpper(b byte) byte {
 // goroutine loop
 func find(sleep uint) {
 	for {
-		private, public := RandomPair()
+		publicRaw, private, err := ed25519.GenerateKey(rand.Reader)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		public := base58.Encode(publicRaw)
 
 		for _, target := range targets {
 			matched := true
 			for i := range target {
-				if !comp(public[i+3], target[i], toUpper(target[i])) {
+				if !comp(public[i], target[i], toUpper(target[i])) {
 					matched = false
 					break
 				}
 			}
 			if matched {
-				fmt.Println(private, public, time.Since(now))
+				fmt.Printf("%s %s\n", public, hex.EncodeToString(private))
 			}
 		}
 
-		i++
+		atomic.AddUint64(&i, 1)
 		if sleep > 0 {
 			time.Sleep(time.Microsecond * time.Duration(sleep))
 		}
